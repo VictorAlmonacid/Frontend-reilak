@@ -1,0 +1,76 @@
+.perfil {
+    display: flex;
+    color: $negro-0;
+    margin-left: 3em;
+    margin-top: 1.5em;
+}
+
+.perfil__contacto-foto {
+    border-radius: 5px;
+    width: 450px;
+    background-color: $blanco-2;
+    height: 65%;
+    margin: 5px;
+    text-align: center;
+}
+
+.perfil-foto {
+    margin-top: 10px;
+    font-size: 4em;
+}
+
+.nombre-perfil {
+    padding: 0px;
+    margin: 0px;
+    color: $negro-0;
+}
+
+.rut {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 30px 0px 30px;
+}
+
+.cumpleaños__perfil {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 30px 0px 30px;
+}
+
+.perfil__contacto-info {
+    width: 300px;
+    background-color: $fondo-panel;
+    height: 300px;
+    margin: 5px;
+}
+
+.perfil__empresa {
+    border-radius: 5px;
+    width: 700px;
+    background-color: $blanco-2;
+    height: 70%;
+    margin: 5px;
+    text-align: center;
+}
+
+hr {
+    margin: 10px;
+}
+
+.configuracion {
+    margin: auto;
+    color: $negro-0;
+}
+
+.configuracion__titulo {
+    margin-left: 1.5em;
+    font-size: 25px;
+}
+
+.form__ajuste {
+    border-radius: 5px;
+    background-color: $blanco-2;
+    margin: 2em;
+    width: 50em;
+    padding: 2em;
+}

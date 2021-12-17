@@ -1,0 +1,199 @@
+.container__dashboard {
+    display: grid;
+    height: 100%;
+    width: 100%;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-rows: 5% 95%;
+    align-self: center;
+    justify-self: center;
+    background-color: $blanco-2;
+    height: 95%;
+    width: 95%;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    .download-table-xls-button {
+        background-color: $morado;
+        color: $blanco-0;
+        height: 100%;
+        width: 100%;
+    }
+    .header {
+        width: 100%;
+        display: flex;
+        .opt {
+            display: flex;
+            height: 100%;
+            width: calc(100% / 3);
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            &:hover {
+                background-color: $morado;
+                color: $blanco-0;
+            }
+        }
+        .seleccionado {
+            background-color: $morado;
+            color: $blanco-0;
+        }
+    }
+    .body {
+        display: grid;
+        width: 100%;
+        background-color: $blanco-0;
+        .dcontenido {
+            display: grid;
+            grid-template-rows: 50% 50%;
+            align-self: center;
+            justify-self: center;
+            height: 100%;
+            width: 100%;
+            border-radius: 5px;
+            .dprimerarowcompleta {
+                display: grid;
+                grid-template-columns: 100%;
+            }
+            .dprimerarow {
+                display: grid;
+                grid-template-columns: 50% 50%;
+            }
+            .dsegundarow {
+                display: grid;
+                grid-template-columns: calc(100% / 3) calc(100% / 3) calc(100% / 3);
+            }
+        }
+        .dfcontenido {
+            display: grid;
+            align-self: center;
+            justify-self: center;
+            height: 100%;
+            width: 100%;
+            border-radius: 5px;
+        }
+        .dapartado {
+            display: grid;
+            grid-template-rows: 8% 6% 86%;
+            align-items: center;
+            justify-items: center;
+            align-self: center;
+            justify-self: center;
+            height: 98%;
+            width: 98%;
+            border-radius: 5px;
+            background-color: $blanco-2;
+            .dtabla {
+                display: grid;
+                height: 100%;
+                width: 100%;
+                grid-template-columns: 10% 80% 10%;
+                align-items: center;
+                justify-items: center;
+            }
+            .dinfo {
+                height: 100%;
+                width: 100%;
+                overflow-y: auto;
+                overflow-x: auto;
+                table {
+                    border: 1px solid #ccc;
+                    border-collapse: collapse;
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                    table-layout: fixed;
+                }
+                table caption {
+                    font-size: 1.5em;
+                    margin: 0.5em 0 0.75em;
+                }
+                table tr {
+                    background-color: #f8f8f8;
+                    border: 1px solid #ddd;
+                    padding: 0.35em;
+                }
+                table th,
+                table td {
+                    padding: 0.625em;
+                    text-align: center;
+                }
+                table th {
+                    font-size: 0.85em;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
+                }
+                @media screen and (max-width: 600px) {
+                    table {
+                        border: 0;
+                    }
+                    table caption {
+                        font-size: 1.3em;
+                    }
+                    table thead {
+                        border: none;
+                        clip: rect(0 0 0 0);
+                        height: 1px;
+                        margin: -1px;
+                        overflow: hidden;
+                        padding: 0;
+                        position: absolute;
+                        width: 1px;
+                    }
+                    table tr {
+                        border-bottom: 3px solid #ddd;
+                        display: block;
+                        margin-bottom: 0.625em;
+                    }
+                    table td {
+                        border-bottom: 1px solid #ddd;
+                        display: block;
+                        font-size: 0.8em;
+                        text-align: right;
+                    }
+                    table td::before {
+                        /*
+                      * aria-label has no advantage, it won't be read inside a table
+                      content: attr(aria-label);
+                      */
+                        content: attr(data-label);
+                        float: left;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                    }
+                    table td:last-child {
+                        border-bottom: 0;
+                    }
+                }
+            }
+            .valores {
+                display: grid;
+                grid-template-columns: 50% 50%;
+                .dvtitulo {
+                    display: grid;
+                    align-items: center;
+                    justify-items: center;
+                }
+                .dvinfo {
+                    display: grid;
+                    align-items: center;
+                    justify-items: center;
+                    font-size: 500%;
+                }
+                .dvsolo {
+                    display: grid;
+                    grid-template-rows: 20% 80%;
+                }
+                .dvduo {
+                    display: grid;
+                    grid-template-rows: 30% 70%;
+                }
+                .ddiv {
+                    display: grid;
+                    grid-template-rows: 50% 50%;
+                }
+            }
+        }
+    }
+}

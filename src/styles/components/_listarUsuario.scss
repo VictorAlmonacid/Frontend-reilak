@@ -1,0 +1,38 @@
+.tabla-contenedor-lu {
+    background-color: $blanco-2;
+    height: 82vh;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    i {
+        color: $morado;
+    }
+}
+
+.btn-lu {
+    width: 130px;
+}
+
+.cabezera-lu {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.label-opaco {
+    color: $tecto-opaco;
+}
+
+.texto-principal {
+    color: $negro-1;
+}
+
+.btnBuscar {
+    background-color: $blanco-0;
+}
+
+.permiso-buscar-lu {
+    padding-top: 24px;
+}
+
+.iconos-lu {
+    color: $iconos;
+}

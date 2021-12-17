@@ -1,0 +1,28 @@
+.main__content {
+    display: flex;
+    height: 100%;
+    max-width: 2000px;
+    margin: 0 auto;
+}
+
+.main__home {
+    display: flex;
+    justify-content: space-between;
+    background-color: $blanco-0;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 93vh;
+    &::-webkit-scrollbar {
+        width: 5px;
+        background-color: $fondo;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: $iconos;
+        border-radius: 5px;
+    }
+}
+
+.main__home.dark {
+    background-color: $fondo-light;
+}
