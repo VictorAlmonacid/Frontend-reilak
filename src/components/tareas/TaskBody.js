@@ -33,7 +33,7 @@ export const TaskBody = () => {
                         </div>
                         <div className="task__body-card-details">
                             <div className="task__body-card-details-state">
-                                {tarea.estado?'Completa':'En proceso'}
+                                {tarea.estado?<strong className='color-text-green'>Completada</strong>: !tarea.estado && moment(tarea.fechaTermino).format("DD-MM-YYYY")<moment(Date.now()).format("DD-MM-YYYY")?<strong className='color-text-orange'>Atrasada</strong>:<strong className='color-text-blue'>En proceso</strong>}
                             </div>
                             <div className="task__body-card-details-date">
                            Termino: {moment(tarea.fechaTermino).format("DD-MM-YYYY")}

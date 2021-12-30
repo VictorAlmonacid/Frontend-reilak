@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { TaskModalForm } from "./TaskModalForm";
+import moment from "moment";
 
 export const TaskHeader = () => {
 
@@ -18,10 +19,10 @@ useEffect(() => {
   setEnProceso(tareas.filter(e=>
     e.estado === false
   ));
-  // setAtrasada(tareas.filter(e=>
-  //   e.estado === false && e.fecha>Date.now()
+  setAtrasada(tareas.filter(e=>
+    e.estado === false && moment(e.fechaTermino).format("DD-MM-YYYY")<moment(Date.now()).format("DD-MM-YYYY")
     
-  // ));
+  ));
 }, [tareas])
 
   return (
@@ -41,7 +42,7 @@ useEffect(() => {
         <div className="task__header-info">
           <div className="task__header-info-item">Completados {completada.length}</div>
           <div className="task__header-info-item">En proceso {enProceso.length}</div>
-          {/* <div className="task__header-info-item">Atrasadas {atrasada.length}</div> */}
+          <div className="task__header-info-item">Atrasadas {atrasada.length}</div>
         </div>
       </div>
       <TaskModalForm show={showModal} close={() => setshowModal(false)} />

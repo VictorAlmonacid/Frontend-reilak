@@ -78,7 +78,7 @@ export const ChatListUsers = () => {
             <div className="chat__left-list-item-info">
               <div className="chat__left-list-item-info-nombre">
                 {chats.name ? chats.name : chats.user[0].name} {chats.tipo === "personal" && chats.user ? chats.user[0].apellidoPaterno : ''}
-             {chats.lastmessage[0]&& !chats.lastmessage[0].viewedby.includes(uid) && <span> <i class="fas fa-bell"></i></span>}
+             {chats.lastmessage[0]&& !chats.lastmessage[0].viewedby.filter(x=> x._id===uid).map(x=>x._id).includes(uid) && <i class="fas fa-bell"></i>}
               </div>
               <div className="chat__left-list-item-info-last-message">
                 <span className="chat__left-list-item-info-last-message-content">{chats.lastmessage[0]? chats.lastmessage[0].message.substr(-3)==="png" ||chats.lastmessage[0].message.substr(-3)==="jpg"||chats.lastmessage[0].message.substr(-3)==="gif"||chats.lastmessage[0].message.substr(-3)==="jpge"?<i class="fas fa-image"> Imagen</i>:chats.lastmessage[0].message.substr(-3)==="mp4"?<i class="fas fa-video"> Video</i> :chats.lastmessage[0].message:'' }</span><span className="chat__left-list-item-info-last-message-date"> {chats.lastmessage[0]? moment(chats.lastmessage[0].fecha).format("h:mm a DD-MM"):''}</span>

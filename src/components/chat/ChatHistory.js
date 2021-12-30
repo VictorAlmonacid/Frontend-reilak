@@ -163,10 +163,10 @@ export const ChatHistory = () => {
           { messageActivo &&
           
                 messageActivo.viewedby.map((miembro,i )=>(
-                  miembro !== uid &&
+                  miembro._id !== uid &&
             <div className="task__details-members-list-item">
               <div className="task__details-members-list-item-picture">
-              {users.map((user,i)=>(user.id === miembro && (
+              {users.map((user,i)=>(user.id === miembro._id && (
                     <img
                     src={user.imgusuario} width="40" height="40" 
                     alt=""
@@ -175,11 +175,13 @@ export const ChatHistory = () => {
                 
               </div>
            
-              <div className="task__details-members-list-item-info">
+              <div className="task__details-members-list">
               
                 <div className="task__details-members-list-item-name">
-                  {users.map((user,i)=>(user.id === miembro && user.name +' ' + user.segundoNombre))} <br />
-                  {users.map((user,i)=>(user.id === miembro && user.apellidoPaterno +' ' + user.apellidoMaterno))}
+                  {users.map((user,i)=>(user.id === miembro._id && user.name +' ' + user.segundoNombre  +' ' + user.apellidoPaterno  +' ' + user.apellidoMaterno))} 
+                </div>
+                <div className="task__details-members-list-item-name">
+                 A las {moment(miembro.fecha).format("h:mm a, DD-MM")}
                 </div>
             
                 

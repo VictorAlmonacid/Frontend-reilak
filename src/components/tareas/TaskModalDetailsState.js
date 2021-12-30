@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { tareasStartUpdate } from '../../actions/tarea';
+import moment from "moment";
 
 const initTask = {
     estado: false
@@ -11,6 +12,7 @@ export const TaskModalDetailsState = () => {
     const { activeTareas } = useSelector((state) => state.tareas);
     const [formValues, setFormValues] = useState(initTask);
     const { uid } = useSelector((state) => state.auth);
+    
    
 
     const handleSubmitForm = (e) => {
@@ -35,7 +37,7 @@ export const TaskModalDetailsState = () => {
     return (
         <form className="task__details-content-state" onSubmit={handleSubmitForm}>
             <span>Estado</span>{" "}
-            <span className="task-state-green">{activeTareas.estado? 'Completo' : 'En proceso'}</span>
+            <span className="task-state-green">{activeTareas.estado?'Completa': !activeTareas.estado && moment(activeTareas.fechaTermino).format("DD-MM-YYYY")<moment(Date.now()).format("DD-MM-YYYY")?'Atrasada':'En proceso'}</span>
             <div className="">
             { activeTareas.usuario === uid?
             <div className="input-button">
