@@ -3,13 +3,14 @@ import { fetchConAxios, fetchConToken } from "../helpers/fetch";
 import { types } from "../types/types";
 //-----------------||CREAR||-----------------
 export const userStartAddNew = (event) => {
-    //post
-    return async(dispatch, getState) => {
-
+    return async (dispatch, getState) => {
         try {
             const resp = await fetchConAxios("user", event, "POST");
-            const body = await JSON.stringify(resp.data.usuarios);
-            if (body.ok) {
+            const body = await JSON.stringify(resp.data);
+            console.log("resp.data", resp.data);
+            console.log(body);
+            if (body) {
+                console.log(body.ok);
                 dispatch(userAddNew(event));
                 Swal.fire('Usuario creado', '', 'success');
             } else {
@@ -37,7 +38,7 @@ export const userClearActiveEvent = () => ({
 
 //-----------------||ACTUALIZAR||-----------------
 export const userStartUpdate = (event) => {
-    return async(dispatch) => {
+    return async (dispatch) => {
         try {
             let load = false;
             if (!load) {
@@ -68,7 +69,7 @@ const userUpdated = (event) => ({
 });
 //-----------------||ELIMINAR||-----------------
 export const userStartDelete = (event) => {
-    return async(dispatch) => {
+    return async (dispatch) => {
         try {
 
             const resp = await fetchConToken(`user/${event.id}`, event, 'PUT');
@@ -94,12 +95,11 @@ export const userDeleted = () => ({
 });
 //-----------------||LISTAR||-----------------
 export const userStartLoading = () => {
-    return async(dispatch) => {
+    return async (dispatch) => {
         try {
             const resp = await fetchConToken("user");
             const body = await resp.json();
             const users = body.usuario;
-            console.log(users);
             dispatch(userLoaded(users));
         } catch (error) {
             console.log(error)

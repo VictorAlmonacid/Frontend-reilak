@@ -19,7 +19,17 @@ const initialState = {
     rcantidadchatusuarios: [],
     rcantidadusuarioschat: [],
     cantidadcantidadusuarios: [],
-    cantidadusuariosconectados: []
+    cantidadusuariosconectados: [],
+    tiempototalconexion: [],
+    tiempocantidadtotalconexion: [],
+    dashboardcantidadchats: [],
+    dashboardcantidadchatspersonal: [],
+    dashboardcantidadchatsgrupal: [],
+    dashboardcantidadchatscanal: [],
+    dashboardcantidadtareas: [],
+    dashboardcantidadtareasproceso: [],
+    dashboardcantidadtareasatrasadas: [],
+    dashboardcantidadtareascompletadas: [],
 };
 
 export const dashboardReducer = (state = initialState, action) => {
@@ -108,6 +118,56 @@ export const dashboardReducer = (state = initialState, action) => {
             return {
                 ...state,
                 cantidadusuariosconectados: action.payload
+            }
+        case types.dashboardTiempoTC:
+            return {
+                ...state,
+                tiempototalconexion: action.payload
+            }
+        case types.dashboardCTiempoTC:
+            return {
+                ...state,
+                tiempocantidadtotalconexion: action.payload
+            }
+        case types.dashboardCantidadCC:
+            return {
+                ...state,
+                dashboardcantidadchats: action.payload
+            }
+        case types.dashboardCantidadCCP:
+            return {
+                ...state,
+                dashboardcantidadchatspersonal: action.payload
+            }
+        case types.dashboardCantidadCCG:
+            return {
+                ...state,
+                dashboardcantidadchatsgrupal: action.payload
+            }
+        case types.dashboardCantidadCCC:
+            return {
+                ...state,
+                dashboardcantidadchatscanal: action.payload
+            }
+        case types.dashboardCantidadTareas:
+            return {
+                ...state,
+                dashboardcantidadtareas: action.payload
+            }
+        case types.dashboardCantidadTareasProceso:
+            return {
+                ...state,
+                dashboardcantidadtareasproceso: action.payload
+            }
+        case types.dashboardCantidadTareasAtrasadas:
+            return {
+                ...state,
+                dashboardcantidadtareasatrasadas: action.payload
+            }
+        case types.dashboardCantidadTareasCompletadas:
+            return {
+                ...state,
+                dashboardcantidadtareascompletadas: action.payload
             }
         default:
             return state;

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { messageBirthdayStartLoading } from "../../actions/cumpleaños";
+import { birthdayStartAddChangeViewed, messageBirthdayStartLoading } from "../../actions/cumpleaños";
 import moment from "moment";
+import ReactPlayer from "react-player";
 
 export const MyBirthday = () => {
   const [accordion, setAccordion] = useState(false);
@@ -18,6 +19,10 @@ export const MyBirthday = () => {
   );
   console.log(datecompare);
   console.log(moment(new Date()).format("DD-MM-YYYY"));
+
+  const handleViewed = (id)=>{
+    dispatch(birthdayStartAddChangeViewed(id));
+  }
 
   return (
     <div className="mybirthday">
@@ -39,7 +44,7 @@ export const MyBirthday = () => {
           </div>
           {accordion && (
             <div className="mybirthday__body">
-              {message.map(({ message, userFelicitador, fecha }, i) => (
+              {message.map(({_id, message, userFelicitador, fecha, multimedia }, i) => (
                 <div className="mybirthday__body-item">
                   <div className="mybirthday__body-item-top">
                     <div className="mybirthday__body-item-top-left">
@@ -57,8 +62,35 @@ export const MyBirthday = () => {
                     </div>
                   </div>
                   <div className="mybirthday__body-item-bottom">{message}</div>
+                  <div className="publicaciones__multimedia">
+                {multimedia.length > 0 ? (
+                  multimedia.map((multimedia)=>(
+                  multimedia.substr(-3) === "mp4" ? (
+                    <div className="publicaciones__multimedia">
+                      <ReactPlayer
+                        url={multimedia}
+                        width="100%"
+                        height="100%"
+                        controls
+                        volume="0.8"
+                      />
+                    </div>
+                  ) : (
+                    <img src={multimedia} width="100%" height="100%" />
+                  )
+                  ))
+                ) : (
+                  ""
+                )}
+              </div>
+              <div className="task__details-members-opts">
+            <div className="input-button">
+              <button type="submit" onClick={() => {handleViewed(_id)}}>Marcar como visto</button>
+            </div>
+          </div>
                 </div>
               ))}
+
             </div>
           )}
         </div>

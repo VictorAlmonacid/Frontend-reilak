@@ -47,6 +47,7 @@ export const ChatHistory = () => {
   const [modalChanel, setModalChanel] = useState(false);
 
   const handleMessageActive = (message) => {
+    console.log(message);
     setMessageActivo(message);
     setModalChanel(true);
   };

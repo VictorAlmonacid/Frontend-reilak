@@ -20,19 +20,19 @@ import { userStartLoading } from "../../actions/usuarios";
 
 const customStyles = {
     content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      backgroundColor: "#242526",
+        top: "50%",
+        left: "50%",
+        right: "auto",
+        bottom: "auto",
+        marginRight: "-50%",
+        transform: "translate(-50%, -50%)",
+        backgroundColor: "#242526",
     },
     overlay: {
-      transition: "opacity .2s ease-in-out",
-      backgroundColor: "rgba(53, 5, 5, 0.3)",
+        transition: "opacity .2s ease-in-out",
+        backgroundColor: "rgba(53, 5, 5, 0.3)",
     },
-  };
+};
 
 //CALENDARIO
 const now = moment().minutes(0).seconds(0).add(1, 'hours'); // 3:00:00
@@ -85,7 +85,7 @@ export const CRUDEventos = () => {
         descripcion,
         start,
         end,
-        tipo ,
+        tipo,
         usuariosevent,
         radio,
         link
@@ -129,7 +129,7 @@ export const CRUDEventos = () => {
         formData.set('start', formValues.start);
         formData.set('end', formValues.end);
         formData.set('tipo', formValues.tipo);
-        console.log("userSelect",usersSelect);
+        console.log("userSelect", usersSelect);
         usersSelect.forEach((user) => console.log(user.id));
         usersSelect.forEach((user) => formValues.usuariosevent.push(user.id));
         formData.set('reunion', formValues.usuariosevent);
@@ -366,7 +366,7 @@ export const CRUDEventos = () => {
                     </form>
                     :
                     (stepActual == 2 && eleccion == "Reunion" || activeEvents != null && tipo == "Reunion") ?
-                        <form className="form-eventos" onSubmit={handleSubmitForm}>
+                        <div className="form-eventos" >
                             <div className="header-crud-eventos-ysm">
                                 <Link to="/eventos">
                                     <div className="volver-crud-eventos-ysm" onClick={handleVolver}>
@@ -426,113 +426,113 @@ export const CRUDEventos = () => {
 
                             </div>
                             <Modal
-                  isOpen={modalOpen}
-                  onRequestClose={closeModal}
-                  style={customStyles}
-                  closeTimeoutMS={1}
-                // className="modal modal-publicacion"
-                // overlayClassName="modal-fondo"
-                >
-                  <form
-                    className="createcanal__modal"
-                    onSubmit={handleSubmitForm}
-                  >
-                    <div className="createcanal__modal-header">
-                      Añadir miembros
-                    </div>
-                    <div className="createcanal__modal-body">
-                      <div className="chat__userlected">
-                        {usersSelect.map(
-                          (
-                            {
-                              name,
-                              segundoNombre,
-                              apellidoPaterno,
-                              apellidoMaterno,
-                              imgusuario,
-                              id,
-                            },
-                            i
-                          ) => (
-                            <div
-                              key={i}
-                              className="chat__userlected-item"
-                              onClick={() => {
-                                handleRemoveUser(
-                                  i,
-                                  id,
-                                  name,
-                                  segundoNombre,
-                                  apellidoPaterno,
-                                  apellidoMaterno,
-                                  imgusuario
-                                );
-                              }}
+                                isOpen={modalOpen}
+                                onRequestClose={closeModal}
+                                style={customStyles}
+                                closeTimeoutMS={1}
+                            // className="modal modal-publicacion"
+                            // overlayClassName="modal-fondo"
                             >
-                              <img src={imgusuario} />
-                              <div>{name}</div>
-                            </div>
-                          )
-                        )}
-                      </div>
-                      <div className="createcanal__modal-body-search">
-                        <input type="text" placeholder="Buscar" />
-                      </div>
-                      <div className="createcanal__modal-body-users">
-                        {usersList.map(
-                          (
-                            {
-                              name,
-                              segundoNombre,
-                              apellidoPaterno,
-                              apellidoMaterno,
-                              imgusuario,
-                              id,
-                            },
-                            i
-                          ) => (
-                            <div
-                              key={i}
-                              className="contenedor__iniciar-chat-body-item"
-                              onClick={() => {
-                                handleSelectUser(
-                                  i,
-                                  id,
-                                  name,
-                                  segundoNombre,
-                                  apellidoPaterno,
-                                  apellidoMaterno,
-                                  imgusuario
-                                );
-                              }}
-                            >
-                              <div className="contenedor__iniciar-chat-body-item-left">
-                                <img src={imgusuario} />
-                              </div>
-                              <div className="contenedor__iniciar-chat-body-item-right">
-                                {name} {segundoNombre} <br />
-                                {apellidoPaterno} {apellidoMaterno}
-                              </div>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </div>
-                    <div className="creategrupo__modal-footer">
-                      <button
-                        className="birthday__modal-btn"
-                        type="button"
-                        onClick = {closeModal}
-                      >
-                        Cancelar
-                      </button>
-                      <button type="submit" className="birthday__modal-btn">
-                        Crear
-                      </button>
-                    </div>
-                  </form>
-                </Modal>
-                        </form>
+                                <form
+                                    className="createcanal__modal"
+                                    onSubmit={handleSubmitForm}
+                                >
+                                    <div className="createcanal__modal-header">
+                                        Añadir miembros
+                                    </div>
+                                    <div className="createcanal__modal-body">
+                                        <div className="chat__userlected">
+                                            {usersSelect.map(
+                                                (
+                                                    {
+                                                        name,
+                                                        segundoNombre,
+                                                        apellidoPaterno,
+                                                        apellidoMaterno,
+                                                        imgusuario,
+                                                        id,
+                                                    },
+                                                    i
+                                                ) => (
+                                                    <div
+                                                        key={i}
+                                                        className="chat__userlected-item"
+                                                        onClick={() => {
+                                                            handleRemoveUser(
+                                                                i,
+                                                                id,
+                                                                name,
+                                                                segundoNombre,
+                                                                apellidoPaterno,
+                                                                apellidoMaterno,
+                                                                imgusuario
+                                                            );
+                                                        }}
+                                                    >
+                                                        <img src={imgusuario} />
+                                                        <div>{name}</div>
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                        <div className="createcanal__modal-body-search">
+                                            <input type="text" placeholder="Buscar" />
+                                        </div>
+                                        <div className="createcanal__modal-body-users">
+                                            {usersList.map(
+                                                (
+                                                    {
+                                                        name,
+                                                        segundoNombre,
+                                                        apellidoPaterno,
+                                                        apellidoMaterno,
+                                                        imgusuario,
+                                                        id,
+                                                    },
+                                                    i
+                                                ) => (
+                                                    <div
+                                                        key={i}
+                                                        className="contenedor__iniciar-chat-body-item"
+                                                        onClick={() => {
+                                                            handleSelectUser(
+                                                                i,
+                                                                id,
+                                                                name,
+                                                                segundoNombre,
+                                                                apellidoPaterno,
+                                                                apellidoMaterno,
+                                                                imgusuario
+                                                            );
+                                                        }}
+                                                    >
+                                                        <div className="contenedor__iniciar-chat-body-item-left">
+                                                            <img src={imgusuario} />
+                                                        </div>
+                                                        <div className="contenedor__iniciar-chat-body-item-right">
+                                                            {name} {segundoNombre} <br />
+                                                            {apellidoPaterno} {apellidoMaterno}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="creategrupo__modal-footer">
+                                        <button
+                                            className="birthday__modal-btn"
+                                            type="button"
+                                            onClick={closeModal}
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" className="birthday__modal-btn">
+                                            Crear
+                                        </button>
+                                    </div>
+                                </form>
+                            </Modal>
+                        </div>
                         :
                         ""
             }

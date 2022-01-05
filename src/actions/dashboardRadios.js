@@ -6,7 +6,6 @@ export const dashboardCantidadUsuarios = () => {
         try {
             const resp = await fetchConToken(`dashboard/dcantidadu/`);
             const body = await resp.json();
-            console.log(body);
             const conexiones = body.usuario1;
             dispatch(dashboardCantidadU(conexiones));
         } catch (error) {
@@ -25,7 +24,7 @@ export const dashboardUsuariosConectados = () => {
         try {
             const resp = await fetchConToken(`dashboard/dusuariosc/`);
             const body = await resp.json();
-            console.log(body);
+
             const conexiones = body.usuario1;
             dispatch(dashboardUsuariosC(conexiones));
         } catch (error) {
@@ -44,7 +43,7 @@ export const dashboardRadioConexiones = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradiocs/`);
             const body = await resp.json();
-            console.log(body);
+
             const conexiones = body.usuario1;
             dispatch(dashboardRadiosCo(conexiones));
         } catch (error) {
@@ -63,7 +62,7 @@ export const dashboardRadioCantidadEdad = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradioce/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosCE(cantidad));
         } catch (error) {
@@ -84,7 +83,7 @@ export const dashboardRadioCantidadArea = () => {
             const body = await resp.json();
 
             const cantidad = body.usuario1;
-            console.log(cantidad);
+
             dispatch(dashboardRadiosCA(cantidad));
         } catch (error) {
             console.log(error)
@@ -103,7 +102,7 @@ export const dashboardRadioCantidadCargo = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradiocc/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosCC(cantidad));
         } catch (error) {
@@ -123,7 +122,7 @@ export const dashboardRadioCantidadRol = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradiocr/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosCR(cantidad));
         } catch (error) {
@@ -142,7 +141,7 @@ export const dashboardRadioPublicacionesUsuarios = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradiopu/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosPU(cantidad));
         } catch (error) {
@@ -161,7 +160,7 @@ export const dashboardRadioPublicacionesFecha = () => {
         try {
             const resp = await fetchConToken(`dashboard/dvalorespf/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosPF(cantidad));
         } catch (error) {
@@ -180,7 +179,7 @@ export const dashboardRadioPublicacionesCategoria = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradiopc/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosPC(cantidad));
         } catch (error) {
@@ -199,7 +198,7 @@ export const dashboardRadioEventosUsuarios = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradioeu/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosEU(cantidad));
         } catch (error) {
@@ -218,7 +217,7 @@ export const dashboardRadioEventoFecha = () => {
         try {
             const resp = await fetchConToken(`dashboard/dvaloresef/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosEF(cantidad));
         } catch (error) {
@@ -237,7 +236,7 @@ export const dashboardRadioEventoCategoria = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradioec/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosEC(cantidad));
         } catch (error) {
@@ -256,7 +255,7 @@ export const dashboardRadioGruposUsuarios = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradioecg/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosGU(cantidad));
         } catch (error) {
@@ -275,7 +274,7 @@ export const dashboardRadioCanalesUsuarios = () => {
         try {
             const resp = await fetchConToken(`dashboard/dvalorescu/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosCU(cantidad));
         } catch (error) {
@@ -294,7 +293,7 @@ export const dashboardRadioUsuariosChat = () => {
         try {
             const resp = await fetchConToken(`dashboard/dradiouc/`);
             const body = await resp.json();
-            console.log(body);
+
             const cantidad = body.usuario1;
             dispatch(dashboardRadiosUC(cantidad));
         } catch (error) {

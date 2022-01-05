@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import DataTable from 'react-data-table-component';
+//DATE
+import DateTimePicker from 'react-datetime-picker';
 import moment from 'moment';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel';
-
+import Swal from 'sweetalert2';
 import { Bar, Pie } from 'react-chartjs-2';
 
 import { eventsStartLoading } from "../../actions/eventos";
@@ -20,10 +23,31 @@ import {
     dashboardRadioGruposUsuarios,
     dashboardRadioUsuariosChat,
     dashboardCantidadUsuarios,
-    dashboardUsuariosConectados
+    dashboardUsuariosConectados,
+
 } from "../../actions/dashboardRadios";
-import { userStartLoading } from "../../actions/usuarios";
+import {
+    totaLTiempoConexion,
+    valoresCantidadChats,
+    valoresCantidadChatsCanal,
+    valoresCantidadChatsGrupal,
+    valoresCantidadChatsPersonal,
+    valoresCantidadTareas,
+    valoresCantidadTareasAtrasadas,
+    valoresCantidadTareasCompletadas,
+    valoresCantidadTareasProceso
+} from "../../actions/dashboard";
+
+import { userStartLoading, userSetActive } from "../../actions/usuarios";
 import { postStartLoading } from "../../actions/post";
+import { DashboardUserData } from "./DashboardUserData";
+import { tareasStartLoading } from "../../actions/tarea";
+import { DashboardTareasAtrasadas, DashboardTareasCompletadas, DashboardTareasCreadas, DashboardTareasData, DashboardTareasEnProceso } from "./DashboardTareasData";
+import { DashboardChatsCanal, DashboardChatsCreados, DashboardChatsGrupal, DashboardChatsPersonal } from "./DashboardChatData";
+
+//CALENDARIO
+const now = moment().minutes(0).seconds(0).add(1, 'hours'); // 3:00:00
+const nowPlus1 = now.clone().add(1, 'hours');
 
 //InitEvents
 const initEvent = {
@@ -31,7 +55,12 @@ const initEvent = {
     opcionTablas: 'Publicaciones',
     opcionDashboard: 'Usuarios',
     tabla: '',
-    fullscreen: 'NoFullscreen'
+    fullscreen: 'Tabla',
+    start: now.toDate(),
+    end: nowPlus1.toDate(),
+    tareasatrasadas: 0,
+    opttarea: "",
+    optchat: "",
 }
 
 export const DashboardScreen = () => {
@@ -59,6 +88,16 @@ export const DashboardScreen = () => {
         dispatch(dashboardRadioCanalesUsuarios());
         dispatch(dashboardRadioGruposUsuarios());
         dispatch(dashboardRadioUsuariosChat());
+        dispatch(totaLTiempoConexion());
+        dispatch(tareasStartLoading());
+        dispatch(valoresCantidadChats());
+        dispatch(valoresCantidadChatsPersonal());
+        dispatch(valoresCantidadChatsGrupal());
+        dispatch(valoresCantidadChatsCanal());
+        dispatch(valoresCantidadTareas());
+        dispatch(valoresCantidadTareasProceso());
+        dispatch(valoresCantidadTareasAtrasadas());
+        dispatch(valoresCantidadTareasCompletadas());
         // dispatch(dashboardCantidadUsuarios());
         // dispatch(dashboardUsuariosConectados());
         setFormValues(initEvent);
@@ -69,6 +108,7 @@ export const DashboardScreen = () => {
     const { posts } = useSelector(state => state.post);
     const { events } = useSelector(state => state.events);
     const { chats } = useSelector(state => state.chat);
+
     const {
         rcantidadedad,
         rcantidadarea,
@@ -83,73 +123,206 @@ export const DashboardScreen = () => {
         rcantidadchatusuarios,
         rcantidadusuarioschat,
         cantidadcantidadusuarios,
-        cantidadusuariosconectados
+        cantidadusuariosconectados,
+        tiempototalconexion,
+        dashboardcantidadchats,
+        dashboardcantidadchatspersonal,
+        dashboardcantidadchatsgrupal,
+        dashboardcantidadchatscanal,
+        dashboardcantidadtareas,
+        dashboardcantidadtareasproceso,
+        dashboardcantidadtareasatrasadas,
+        dashboardcantidadtareascompletadas,
     } = useSelector(state => state.dashboard);
-    console.log(cantidadcantidadusuarios);
     //FormValues
+    const { opcionDashboard, fullscreen, start, end, tareasatrasadas, opttarea, optchat } = formValues;
 
-    const { opcionDashboard, fullscreen } = formValues;
+    const handleSubmitForm = (e) => {
+        e.preventDefault();
+
+        const momentStart = moment(start);
+        const momentEnd = moment(end);
+
+        if (momentStart.isSameOrAfter(momentEnd)) {
+            return Swal.fire('Error', 'La fecha fin debe de ser mayor a la fecha de inicio', 'error');
+        }
+
+        const fechas =
+        {
+            fechaInicio: formValues.start,
+            fechaTermino: formValues.end
+        };
+        dispatch(totaLTiempoConexion(fechas));
+    }
 
     //OPT
 
     const OpcionDashboard = (valor) => {
-        console.log(valor);
+
         if (valor == "Usuarios") {
-            console.log(valor);
+
             setFormValues({
                 ...formValues,
-                opcionDashboard: "Usuarios"
+                opcionDashboard: "Usuarios",
+                fullscreen: "Tabla"
             });
         }
 
         if (valor == "Publicaciones") {
-            console.log(valor);
+
             setFormValues({
                 ...formValues,
-                opcionDashboard: "Publicaciones"
+                opcionDashboard: "Publicaciones",
+                fullscreen: "Tabla"
             });
         }
 
         if (valor == "Eventos") {
-            console.log(valor);
+
             setFormValues({
                 ...formValues,
-                opcionDashboard: "Eventos"
+                opcionDashboard: "Eventos",
+                fullscreen: "Tabla"
             });
         }
 
-        if (valor == "Chat") {
-            console.log(valor);
+        if (valor == "Chats") {
+
             setFormValues({
                 ...formValues,
-                opcionDashboard: "Chat"
+                opcionDashboard: "Chats",
+                fullscreen: "Tabla"
+            });
+        }
+
+        if (valor == "Tareas") {
+
+            setFormValues({
+                ...formValues,
+                opcionDashboard: "Tareas",
+                fullscreen: "Tabla"
             });
         }
 
     }
 
-    const Fullscreen = (valor) => {
-        console.log(valor);
-        if (valor == "Fullscreen") {
-            console.log(valor);
+    const Datos = (valor, usuario) => {
+        if (valor == "Tabla") {
             setFormValues({
                 ...formValues,
-                fullscreen: "Fullscreen"
+                fullscreen: "Tabla"
             });
         }
 
-        if (valor == "NoFullscreen") {
-            console.log(valor);
+        if (valor == "Datos") {
+
+            dispatch(userSetActive(usuario));
+
             setFormValues({
                 ...formValues,
-                fullscreen: "NoFullscreen"
+                fullscreen: "Datos"
             });
         }
     }
 
-    const handleInputChange = ({ target }) => {
-        // dispatch(userFiltroEstado(target.value));
+    const DatosTareasAtrasadas = (valor) => {
+
+        setFormValues({
+            ...formValues,
+            fullscreen: "Datos",
+            opttarea: valor
+        });
     }
+
+    const DatosTablasChats = (valor) => {
+
+        setFormValues({
+            ...formValues,
+            fullscreen: "Datos",
+            optchat: valor
+        });
+    }
+
+    // const CantidadTareasAtrasadas = () => {
+    //     setFormValues({
+    //         ...formValues,
+    //         tareasatrasadas: tareasatrasadas + 1
+    //     });
+    //     return tareasatrasadas;
+    // }
+
+
+
+    const handleMilliToMinutes = (valor) => {
+        var tempTime = moment.duration(valor);
+        var y = tempTime.hours() + ":" + tempTime.minutes();
+        return y;
+    }
+
+    const [dateStart, setDateStart] = useState(now.toDate());
+    const [dateEnd, setDateEnd] = useState(nowPlus1.toDate());
+
+    const handleStartDateChange = (e) => {
+        setDateStart(e);
+        setFormValues({
+            ...formValues,
+            start: e
+        })
+    }
+
+    const handleEndDateChange = (e) => {
+        setDateEnd(e);
+        setFormValues({
+            ...formValues,
+            end: e
+        })
+    }
+
+    const handleChatPersonal = () => {
+        const numbers = 0;
+
+        dashboardcantidadchats.forEach((tipo = "personal") => numbers = numbers + 1);
+
+        return numbers
+    }
+
+    const columns = [
+        {
+            name: 'Imagen',
+            selector: row => row.imagen,
+        },
+        {
+            name: 'Rut',
+            selector: row => row.rut,
+        },
+        {
+            name: 'Publicaciones',
+            selector: row => row.publicaciones,
+        },
+        {
+            name: 'Eventos',
+            selector: row => row.eventos,
+        },
+        {
+            name: 'TTC',
+            selector: row => row.ttc,
+        },
+        {
+            name: 'Info',
+            selector: row => row.year,
+        },
+    ];
+
+    const data = users.map((user, i) => [
+        {
+            imagen: 'Beetlejuice',
+            rut: user.rut,
+            publicaciones: 'Beetlejuice',
+            eventos: '1988',
+            ttc: 'Beetlejuice',
+            year: '1988',
+        }
+    ])
 
     return (
 
@@ -168,11 +341,11 @@ export const DashboardScreen = () => {
                         }
                         {(opcionDashboard == "Publicaciones") ?
                             <div className="opt seleccionado">
-                                Publicaciones
+                                <i class="fas fa-newspaper"></i>
                             </div>
                             :
                             <div className="opt" onClick={() => { OpcionDashboard("Publicaciones"); }}>
-                                Publicaciones
+                                <i class="fas fa-newspaper"></i>
                             </div>
                         }
                         {(opcionDashboard == "Eventos") ?
@@ -184,276 +357,33 @@ export const DashboardScreen = () => {
                                 <i class="far fa-calendar-alt"></i>
                             </div>
                         }
-                        {/* {(opcionDashboard == "Chat") ?
+                        {(opcionDashboard == "Chats") ?
                             <div className="opt seleccionado">
                                 <i class="fas fa-comments"></i>
                             </div>
                             :
-                            <div className="opt" onClick={() => { OpcionDashboard("Chat"); }}>
+                            <div className="opt" onClick={() => { OpcionDashboard("Chats"); }}>
                                 <i class="fas fa-comments"></i>
                             </div>
-                        } */}
+                        }
+                        {(opcionDashboard == "Tareas") ?
+                            <div className="opt seleccionado">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            :
+                            <div className="opt" onClick={() => { OpcionDashboard("Tareas") }}>
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                        }
                     </div>
                     <div className="body">
-                        {(opcionDashboard == "Usuarios" && fullscreen == "NoFullscreen") ?
-                            <div className="dcontenido">
-                                <div className="dprimerarowcompleta">
-                                    <div className="dapartado">
-                                        <div className="dtitulo dtabla">
-                                            <div className="opttabla">
-                                                <ReactHTMLTableToExcel
-                                                    id="test-table-xls-button"
-                                                    className="download-table-xls-button"
-                                                    table="descargar-tabla-usuarios"
-                                                    filename="TablaUsuarios"
-                                                    sheet="Usuarios"
-                                                    buttonText="XLS" />
-                                            </div>
-                                            <div className="opttabla">
-                                                Tabla de usuarios
-                                            </div>
-                                            <div className="opttabla">
-                                                {(fullscreen == "Fullscreen") ?
-                                                    <i class="fas fa-compress" onClick={() => { Fullscreen("NoFullscreen"); }}></i>
-                                                    :
-                                                    <i class="fas fa-expand 4x" onClick={() => { Fullscreen("Fullscreen"); }}></i>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div className="dsubtitulo">
+                        {(opcionDashboard == "Usuarios" && fullscreen == "Datos") ?
+                            <div className="dfcontenido">
 
-                                        </div>
-                                        <div className="dinfo">
-                                            <table id="descargar-tabla-usuarios">
+                                <DashboardUserData />
 
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Imagen</th>
-                                                        <th scope="col">Nombre</th>
-                                                        <th scope="col">A. Paterno</th>
-                                                        <th scope="col">Edad</th>
-                                                        <th scope="col">Fono</th>
-                                                        <th scope="col">Rol</th>
-                                                        <th scope="col">Area</th>
-
-                                                        <th scope="col">Nacimiento</th>
-                                                        <th scope="col">Estado</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {users.map(({ imgusuario, name, apellidoPaterno, apeliidoMaterno, edad, emailp, fono, rol, area, cargo, nacimiento, estado }, i) =>
-                                                        <tr>
-                                                            <td data-label="Account"><img src={imgusuario} height="30px" width='30px' style={{ borderRadius: '50%' }} /></td>
-                                                            <td data-label="Due Date">{name}</td>
-                                                            <td data-label="Amount">{apellidoPaterno}</td>
-                                                            <td data-label="Account">{edad}</td>
-
-                                                            <td data-label="Amount">{fono}</td>
-                                                            <td data-label="Period">{rol}</td>
-                                                            <td data-label="Account">{area}</td>
-
-                                                            <td data-label="Amount">{moment(nacimiento).format("DD-MM-yy")}</td>
-                                                            <td data-label="Period">{estado}</td>
-                                                        </tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    {/* <div className="dapartado">
-                                        <div className="dtitulo">
-                                            Usuarios por edad
-                                        </div>
-                                        <div className="dsubtitulo">
-                                        </div>
-                                        <div className="dinfo valores">
-                                            <div className="dvalores dvsolo">
-                                                <div className="dvtitulo">
-                                                    Usuarios Totales
-                                                </div>
-                                                <div className="dvinfo">
-                                                    {cantidadcantidadusuarios.lenght}
-                                                </div>
-                                            </div>
-                                            <div className="dvalores ddiv">
-                                                <div className="dvalores dvduo">
-                                                    <div className="dvtitulo">
-                                                        Usuarios Conectados
-                                                    </div>
-                                                    <div className="dvinfo">
-                                                        {cantidadusuariosconectados}
-                                                    </div>
-                                                </div>
-                                                <div className="dvalores dvduo">
-                                                    <div className="dvtitulo">
-                                                        Usuarios desconectados
-                                                    </div>
-                                                    <div className="dvinfo">
-                                                        {cantidadcantidadusuarios - cantidadusuariosconectados}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div> */}
-                                </div>
-                                <div className="dsegundarow">
-                                    <div className="dapartado">
-                                        <div className="dtitulo">
-                                            Conexiones por edad
-                                        </div>
-                                        <div className="dsubtitulo">
-
-                                        </div>
-                                        <div className="dinfo">
-                                            <Pie
-                                                data={{
-                                                    labels: rcantidadedad.map(({ _id, conexiones }, i) =>
-                                                        [_id]
-                                                    ),
-                                                    datasets: [{
-                                                        label: 'Conexiones',
-                                                        data: rcantidadedad.map(({ _id, conexiones }, i) =>
-                                                            [
-                                                                conexiones
-                                                            ]
-                                                        ),
-                                                        backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                        ],
-                                                        borderColor: [
-                                                            'rgba(255, 99, 132, 1)',
-                                                            'rgba(54, 162, 235, 1)',
-                                                            'rgba(255, 206, 86, 1)',
-                                                            'rgba(75, 192, 192, 1)',
-                                                            'rgba(153, 102, 255, 1)',
-                                                            'rgba(255, 159, 64, 1)',
-                                                        ],
-                                                    }]
-
-                                                }}
-                                                options={{
-                                                    layout: {
-                                                        padding: 8,
-
-                                                    },
-                                                    responsive: true,
-                                                    maintainAspectRatio: false,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="dapartado">
-                                        <div className="dtitulo">
-                                            Conexiones por area
-                                        </div>
-                                        <div className="dsubtitulo">
-
-                                        </div>
-                                        <div className="dinfo">
-                                            <Pie
-                                                data={{
-                                                    labels: rcantidadarea.map(({ _id, conexiones }, i) =>
-                                                        [
-                                                            _id
-                                                        ]
-                                                    ),
-                                                    datasets: [{
-                                                        label: 'Conexiones',
-                                                        data: rcantidadarea.map(({ _id, conexiones }, i) =>
-                                                            [
-                                                                conexiones
-                                                            ]
-                                                        ),
-                                                        backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                        ],
-                                                        borderColor: [
-                                                            'rgba(255, 99, 132, 1)',
-                                                            'rgba(54, 162, 235, 1)',
-                                                            'rgba(255, 206, 86, 1)',
-                                                            'rgba(75, 192, 192, 1)',
-                                                            'rgba(153, 102, 255, 1)',
-                                                            'rgba(255, 159, 64, 1)',
-                                                        ],
-                                                    }]
-
-                                                }}
-                                                options={{
-                                                    layout: {
-                                                        padding: 8,
-
-                                                    },
-                                                    responsive: true,
-                                                    maintainAspectRatio: false,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="dapartado">
-                                        <div className="dtitulo">
-                                            Conexiones por rol
-                                        </div>
-                                        <div className="dsubtitulo">
-
-                                        </div>
-                                        <div className="dinfo">
-                                            <Pie
-                                                data={{
-                                                    labels: rcantidadrol.map(({ _id, conexiones }, i) =>
-                                                        [
-                                                            _id
-                                                        ]
-                                                    ),
-                                                    datasets: [{
-                                                        label: 'Conexiones',
-                                                        data: rcantidadrol.map(({ _id, conexiones }, i) =>
-                                                            [
-                                                                conexiones
-                                                            ]
-                                                        ),
-                                                        backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                        ],
-                                                        borderColor: [
-                                                            'rgba(255, 99, 132, 1)',
-                                                            'rgba(54, 162, 235, 1)',
-                                                            'rgba(255, 206, 86, 1)',
-                                                            'rgba(75, 192, 192, 1)',
-                                                            'rgba(153, 102, 255, 1)',
-                                                            'rgba(255, 159, 64, 1)',
-                                                        ],
-                                                    }]
-
-                                                }}
-                                                options={{
-                                                    layout: {
-                                                        padding: 8,
-
-                                                    },
-                                                    responsive: true,
-                                                    maintainAspectRatio: false,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
-                            : (opcionDashboard == "Usuarios" && fullscreen == "Fullscreen") ?
+                            : (opcionDashboard == "Usuarios" && fullscreen == "Tabla") ?
                                 <div className="dfcontenido">
                                     <div className="dapartado">
                                         <div className="dtitulo dtabla">
@@ -470,48 +400,91 @@ export const DashboardScreen = () => {
                                                 Tabla de usuarios
                                             </div>
                                             <div className="opttabla">
-                                                {(fullscreen == "Fullscreen") ?
-                                                    <i class="fas fa-compress" onClick={() => { Fullscreen("NoFullscreen"); }}></i>
-                                                    :
-                                                    <i class="fas fa-expand 4x" onClick={() => { Fullscreen("Fullscreen"); }}></i>
-                                                }
+
                                             </div>
                                         </div>
-                                        <div className="dsubtitulo">
 
-                                        </div>
+                                        <form
+                                            className="dsubtitulo"
+                                            onSubmit={handleSubmitForm}
+                                        >
+                                            {/* <div className="dsapartado">
+                                                Fecha inicio
+                                            </div>
+                                            <div className="dsapartado">
+                                                <DateTimePicker
+                                                    onChange={handleStartDateChange}
+                                                    value={dateStart}
+                                                    className="input-eventos-ysm"
+                                                />
+                                            </div>
+                                            <div className="dsapartado">
+                                                Fecha final
+                                            </div>
+                                            <div className="dsapartado">
+                                                <DateTimePicker
+                                                    onChange={handleEndDateChange}
+                                                    value={dateEnd}
+                                                    minDate={dateStart}
+                                                    className="input-eventos-ysm"
+                                                />
+                                            </div>
+                                            <div className="dsapartado">
+                                                <button type="submit" className="birthday__modal-btn">
+                                                    Filtrar
+                                                </button>
+                                            </div> */}
+                                        </form>
+
                                         <div className="dinfo">
+                                            {/* <DataTable
+                                                columns={columns}
+                                                data={users.map(({ rut }, i) => [{
+                                                    imagen: 'Beetlejuice',
+                                                    rut: rut,
+                                                    publicaciones: 'Beetlejuice',
+                                                    eventos: '1988',
+                                                    ttc: 'Beetlejuice',
+                                                    year: '1988',
+                                                }])}
+                                            /> */}
                                             <table id="descargar-tabla-usuarios">
-
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">Imagen</th>
+                                                        <th scope="col">Rut</th>
                                                         <th scope="col">Nombre</th>
-                                                        <th scope="col">A. Paterno</th>
-
-                                                        <th scope="col">Edad</th>
-                                                        <th scope="col">Fono</th>
-                                                        <th scope="col">Rol</th>
-                                                        <th scope="col">Area</th>
-                                                        <th scope="col">Cargo</th>
-                                                        <th scope="col">Nacimiento</th>
-                                                        <th scope="col">Estado</th>
+                                                        <th scope="col">Apellido</th>
+                                                        <th scope="col">Publicaciones</th>
+                                                        <th scope="col">Eventos</th>
+                                                        <th scope="col">Tiempo total de conexion</th>
+                                                        <th scope="col">Info</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {users.map(({ imgusuario, name, apellidoPaterno, apeliidoMaterno, edad, emailp, fono, rol, area, cargo, nacimiento, estado }, i) =>
+                                                    {users.map((user, i) =>
                                                         <tr>
-                                                            <td data-label="Account"><img src={imgusuario} height="30px" width='30px' style={{ borderRadius: '50%' }} /></td>
-                                                            <td data-label="Due Date">{name}</td>
-                                                            <td data-label="Amount">{apellidoPaterno}</td>
-                                                            <td data-label="Account">{edad}</td>
+                                                            <td data-label="Account"><img src={user.imgusuario} height="30px" width='30px' style={{ borderRadius: '50%' }} /></td>
+                                                            <td data-label="Due Date">{user.rut}</td>
+                                                            <td data-label="Due Date">{user.name}</td>
+                                                            <td data-label="Due Date">{user.apellidoPaterno}</td>
+                                                            <td data-label="Amount">{rcantidadpublicacionesusuarios.map(({ _id, conexiones }, i) => (_id._id == user.id) ?
+                                                                conexiones
+                                                                :
+                                                                ""
+                                                            )}</td>
+                                                            <td data-label="Amount">{rcantidadeventosusuarios.map(({ _id, conexiones }, i) => (_id._id == user.id) ?
+                                                                conexiones
+                                                                :
+                                                                ""
+                                                            )}</td>
+                                                            <td data-label="Amount">{tiempototalconexion.map(({ _id, tiempo }, i) => (_id == user.id) ?
+                                                                handleMilliToMinutes(tiempo)
+                                                                :
+                                                                ""
+                                                            )}</td>
+                                                            <td data-label="Period"><i class="fas fa-info" onClick={() => { Datos("Datos", user); }}></i></td>
 
-                                                            <td data-label="Amount">{fono}</td>
-                                                            <td data-label="Period">{rol}</td>
-                                                            <td data-label="Account">{area}</td>
-                                                            <td data-label="Due Date">{cargo}</td>
-                                                            <td data-label="Amount">{moment(nacimiento).format("DD-MM-yy")}</td>
-                                                            <td data-label="Period">{estado}</td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -522,7 +495,7 @@ export const DashboardScreen = () => {
                                 : ""
                         }
 
-                        {(opcionDashboard == "Publicaciones" && fullscreen == "NoFullscreen") ?
+                        {(opcionDashboard == "Publicaciones" && fullscreen == "Tabla") ?
                             <div className="dcontenido">
                                 <div className="dprimerarowcompleta">
                                     <div className="dapartado">
@@ -543,9 +516,9 @@ export const DashboardScreen = () => {
                                             </div>
                                             <div className="opttabla">
                                                 {(fullscreen == "Fullscreen") ?
-                                                    <i class="fas fa-compress" onClick={() => { Fullscreen("NoFullscreen"); }}></i>
+                                                    <i class="fas fa-compress" onClick={() => { Datos("NoFullscreen"); }}></i>
                                                     :
-                                                    <i class="fas fa-expand 4x" onClick={() => { Fullscreen("Fullscreen"); }}></i>
+                                                    <i class="fas fa-expand 4x" onClick={() => { Datos("Fullscreen"); }}></i>
                                                 }
                                             </div>
                                         </div>
@@ -628,11 +601,10 @@ export const DashboardScreen = () => {
                                         </div>
                                     </div>
                                     <div className="dapartado">
-                                        <div className="dtitulo">
+                                        {/* <div className="dtitulo">
                                             Reacciones por publicación
                                         </div>
                                         <div className="dsubtitulo">
-
                                         </div>
                                         <div className="dinfo">
                                             <Pie
@@ -666,18 +638,16 @@ export const DashboardScreen = () => {
                                                             'rgba(255, 159, 64, 1)',
                                                         ],
                                                     }]
-
                                                 }}
                                                 options={{
                                                     layout: {
                                                         padding: 8,
-
                                                     },
                                                     responsive: true,
                                                     maintainAspectRatio: false,
                                                 }}
                                             />
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className="dapartado">
                                         <div className="dtitulo">
@@ -733,7 +703,7 @@ export const DashboardScreen = () => {
                                     </div>
                                 </div>
                             </div>
-                            : (opcionDashboard == "Publicaciones" && fullscreen == "Fullscreen") ?
+                            : (opcionDashboard == "Publicaciones" && fullscreen == "Datos") ?
                                 <div className="dfcontenido">
                                     <div className="dapartado">
                                         <div className="dtitulo dtabla">
@@ -751,9 +721,9 @@ export const DashboardScreen = () => {
                                             </div>
                                             <div className="opttabla">
                                                 {(fullscreen == "Fullscreen") ?
-                                                    <i class="fas fa-compress" onClick={() => { Fullscreen("NoFullscreen"); }}></i>
+                                                    <i class="fas fa-compress" onClick={() => { Datos("NoFullscreen"); }}></i>
                                                     :
-                                                    <i class="fas fa-expand 4x" onClick={() => { Fullscreen("Fullscreen"); }}></i>
+                                                    <i class="fas fa-expand 4x" onClick={() => { Datos("Fullscreen"); }}></i>
                                                 }
                                             </div>
                                         </div>
@@ -786,7 +756,7 @@ export const DashboardScreen = () => {
 
                         }
 
-                        {(opcionDashboard == "Eventos" && fullscreen == "NoFullscreen") ?
+                        {(opcionDashboard == "Eventos" && fullscreen == "Tabla") ?
                             <div className="dcontenido">
                                 <div className="dprimerarowcompleta">
                                     <div className="dapartado">
@@ -807,9 +777,9 @@ export const DashboardScreen = () => {
                                             </div>
                                             <div className="opttabla">
                                                 {(fullscreen == "Fullscreen") ?
-                                                    <i class="fas fa-compress" onClick={() => { Fullscreen("NoFullscreen"); }}></i>
+                                                    <i class="fas fa-compress" onClick={() => { Datos("NoFullscreen"); }}></i>
                                                     :
-                                                    <i class="fas fa-expand 4x" onClick={() => { Fullscreen("Fullscreen"); }}></i>
+                                                    <i class="fas fa-expand 4x" onClick={() => { Datos("Fullscreen"); }}></i>
                                                 }
                                             </div>
                                         </div>
@@ -1001,7 +971,7 @@ export const DashboardScreen = () => {
                                     </div>
                                 </div>
                             </div>
-                            : (opcionDashboard == "Eventos" && fullscreen == "Fullscreen") ?
+                            : (opcionDashboard == "Eventos" && fullscreen == "Tabla") ?
                                 <div className="dfcontenido">
                                     <div className="dapartado">
                                         <div className="dtitulo dtabla">
@@ -1019,9 +989,9 @@ export const DashboardScreen = () => {
                                             </div>
                                             <div className="opttabla">
                                                 {(fullscreen == "Fullscreen") ?
-                                                    <i class="fas fa-compress" onClick={() => { Fullscreen("NoFullscreen"); }}></i>
+                                                    <i class="fas fa-compress" onClick={() => { Datos("NoFullscreen"); }}></i>
                                                     :
-                                                    <i class="fas fa-expand 4x" onClick={() => { Fullscreen("Fullscreen"); }}></i>
+                                                    <i class="fas fa-expand 4x" onClick={() => { Datos("Fullscreen"); }}></i>
                                                 }
                                             </div>
                                         </div>
@@ -1032,15 +1002,16 @@ export const DashboardScreen = () => {
                                             <table id="descargar-tabla-eventos">
                                                 <thead>
                                                     <tr>
-                                                        <th scope="col">Titulo</th>
-                                                        <th scope="col">descripcion</th>
-                                                        <th scope="col">Inicio</th>
-                                                        <th scope="col">Final</th>
-                                                        <th scope="col">tipo</th>
+                                                        <th scope="col">Imagen</th>
+                                                        <th scope="col">Rut</th>
+                                                        <th scope="col">Publicaciones</th>
+                                                        <th scope="col">Eventos</th>
+                                                        <th scope="col">Chats</th>
+                                                        <th scope="col">TTC</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {events.map(({ titulo, id, descripcion, start, end, tipo }, i) =>
+                                                    {/* {events.map(({ titulo, id, descripcion, start, end, tipo }, i) =>
                                                         <tr>
                                                             <td data-label="Account">{titulo}</td>
                                                             <td data-label="Due Date">{descripcion}</td>
@@ -1048,277 +1019,206 @@ export const DashboardScreen = () => {
                                                             <td data-label="Period">{moment(end).format("DD-MM-yy")}</td>
                                                             <td data-label="Period">{tipo}</td>
                                                         </tr>
-                                                    )}
+                                                    )} */}
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-                                : ""
+                                :
+
+                                (opcionDashboard == "Chats" && fullscreen == "Datos" && optchat == "TodosChat") ?
+                                    <div className="dfcontenido">
+
+                                        <DashboardChatsCreados />
+
+                                    </div>
+                                    : (opcionDashboard == "Chats" && fullscreen == "Datos" && optchat == "ChatPersonal") ?
+                                        <div className="dfcontenido">
+
+                                            <DashboardChatsPersonal />
+
+                                        </div>
+                                        : (opcionDashboard == "Chats" && fullscreen == "Datos" && optchat == "ChatGrupal") ?
+                                            <div className="dfcontenido">
+
+                                                <DashboardChatsGrupal />
+
+                                            </div>
+                                            : (opcionDashboard == "Chats" && fullscreen == "Datos" && optchat == "ChatCanal") ?
+                                                <div className="dfcontenido">
+
+                                                    <DashboardChatsCanal />
+
+                                                </div>
+                                                :
+                                                (opcionDashboard == "Chats" && fullscreen == "Tabla") ?
+                                                    <div className="duapartado">
+                                                        <div class="datos">
+                                                            <div class="cubo">
+                                                                <div class="cubotitulo">
+                                                                    <div class="cubotitulo-sub">
+
+                                                                    </div>
+                                                                    <div class="cubotitulo-sub">
+                                                                        Chats creados
+                                                                    </div>
+                                                                    <div class="cubotitulo-sub">
+                                                                        {/* <i class="fas fa-eye" onClick={() => { DatosTablasChats("TodosChat"); }}></i> */}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="valoresgeneralessolo tamanoletra">
+                                                                    {dashboardcantidadchats.length}
+                                                                </div>
+                                                            </div>
+                                                            <div class="cubo">
+                                                                <div class="cubotitulo">
+                                                                    <div class="cubotitulo-sub">
+
+                                                                    </div>
+                                                                    <div class="cubotitulo-sub">
+                                                                        Chats individuales
+                                                                    </div>
+                                                                    <div class="cubotitulo-sub">
+                                                                        {/* <i class="fas fa-eye" onClick={() => { DatosTablasChats("ChatPersonal"); }}></i> */}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="valoresgeneralessolo tamanoletra">
+                                                                    {dashboardcantidadchatspersonal.length}
+                                                                </div>
+                                                            </div>
+                                                            <div class="cubo">
+                                                                <div class="cubotitulo">
+                                                                    <div class="cubotitulo-sub">
+
+                                                                    </div>
+                                                                    <div class="cubotitulo-sub">
+                                                                        Chats grupales
+                                                                    </div>
+                                                                    <div class="cubotitulo-sub">
+                                                                        {/* <i class="fas fa-eye" onClick={() => { DatosTablasChats("ChatGrupal"); }}></i> */}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="valoresgeneralessolo tamanoletra">
+                                                                    {dashboardcantidadchatsgrupal.length}
+                                                                </div>
+                                                            </div>
+                                                            <div class="cubo">
+                                                                <div class="cubotitulo">
+                                                                    <div class="cubotitulo-sub">
+
+                                                                    </div>
+                                                                    <div class="cubotitulo-sub">
+                                                                        Canales
+                                                                    </div>
+                                                                    <div class="cubotitulo-sub">
+                                                                        {/* <i class="fas fa-eye" onClick={() => { DatosTablasChats("ChatCanal"); }}></i> */}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="valoresgeneralessolo tamanoletra">
+                                                                    {dashboardcantidadchatscanal.length}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    :
+                                                    (opcionDashboard == "Tareas" && fullscreen == "Datos" && opttarea == "TodasTareas") ?
+                                                        <div className="dfcontenido">
+
+                                                            <DashboardTareasCreadas />
+
+                                                        </div>
+                                                        : (opcionDashboard == "Tareas" && fullscreen == "Datos" && opttarea == "EnProceso") ?
+                                                            <div className="dfcontenido">
+
+                                                                <DashboardTareasEnProceso />
+
+                                                            </div>
+                                                            : (opcionDashboard == "Tareas" && fullscreen == "Datos" && opttarea == "Atrasadas") ?
+                                                                <div className="dfcontenido">
+
+                                                                    <DashboardTareasAtrasadas />
+
+                                                                </div>
+                                                                : (opcionDashboard == "Tareas" && fullscreen == "Datos" && opttarea == "Completadas") ?
+                                                                    <div className="dfcontenido">
+
+                                                                        <DashboardTareasCompletadas />
+
+                                                                    </div>
+                                                                    :
+                                                                    (opcionDashboard == "Tareas" && fullscreen == "Tabla") ?
+                                                                        <div className="duapartado">
+                                                                            <div class="datos">
+                                                                                <div class="cubo">
+                                                                                    <div class="cubotitulo">
+                                                                                        <div class="cubotitulo-sub">
+
+                                                                                        </div>
+                                                                                        <div class="cubotitulo-sub">
+                                                                                            Tareas creadas
+                                                                                        </div>
+                                                                                        <div class="cubotitulo-sub">
+                                                                                            <i class="fas fa-eye" onClick={() => { DatosTareasAtrasadas("TodasTareas"); }}></i>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="valoresgeneralessolo tamanoletra">
+                                                                                        {dashboardcantidadtareas.length}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="cubo">
+                                                                                    <div class="cubotitulo">
+                                                                                        <div class="cubotitulo-sub">
+
+                                                                                        </div>
+                                                                                        <div class="cubotitulo-sub">
+                                                                                            Tareas en proceso
+                                                                                        </div>
+                                                                                        <div class="cubotitulo-sub">
+                                                                                            <i class="fas fa-eye" onClick={() => { DatosTareasAtrasadas("EnProceso"); }}></i>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="valoresgeneralessolo tamanoletra">
+                                                                                        {dashboardcantidadtareasproceso.length}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="cubo">
+                                                                                    <div class="cubotitulo">
+                                                                                        <div class="cubotitulo-sub">
+
+                                                                                        </div>
+                                                                                        <div class="cubotitulo-sub">
+                                                                                            Tareas atrasadas
+                                                                                        </div>
+                                                                                        <div class="cubotitulo-sub">
+                                                                                            <i class="fas fa-eye" onClick={() => { DatosTareasAtrasadas("Atrasadas"); }}></i>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="valoresgeneralessolo tamanoletra">
+                                                                                        {dashboardcantidadtareasatrasadas.length}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="cubo">
+                                                                                    <div class="cubotitulo">
+                                                                                        <div class="cubotitulo-sub">
+
+                                                                                        </div>
+                                                                                        <div class="cubotitulo-sub ">
+                                                                                            Tareas completas
+                                                                                        </div>
+                                                                                        <div class="cubotitulo-sub ">
+                                                                                            <i class="fas fa-eye" onClick={() => { DatosTareasAtrasadas("Completadas"); }}></i>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="valoresgeneralessolo tamanoletra">
+                                                                                        {dashboardcantidadtareascompletadas.length}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        : ""
 
                         }
-
-                        {/* {(opcionDashboard == "Chat" && fullscreen == "NoFullscreen") ?
-                            <div className="dcontenido">
-                                <div className="dprimerarowcompleta">
-                                    <div className="dapartado">
-                                        <div className="dtitulo dtabla">
-                                            <div className="opttabla">
-                                            </div>
-                                            <div className="opttabla">
-                                                Tabla de chats
-                                            </div>
-                                            <div className="opttabla">
-                                                {(fullscreen == "Fullscreen") ?
-                                                    <i class="fas fa-compress" onClick={() => { Fullscreen("NoFullscreen"); }}></i>
-                                                    :
-                                                    <i class="fas fa-expand 4x" onClick={() => { Fullscreen("Fullscreen"); }}></i>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div className="dsubtitulo">
-                                        </div>
-                                        <div className="dinfo">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Account</th>
-                                                        <th scope="col">Due Date</th>
-                                                        <th scope="col">Amount</th>
-                                                        <th scope="col">Period</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {chats.map(({ titulo, id, descripcion, start, end, tipo }, i) =>
-                                                        <tr>
-                                                            <td data-label="Account">Visa - 3412</td>
-                                                            <td data-label="Due Date">04/01/2016</td>
-                                                            <td data-label="Amount">$1,190</td>
-                                                            <td data-label="Period">03/01/2016 - 03/31/2016</td>
-                                                        </tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="dsegundarow">
-                                    <div className="dapartado">
-                                        <div className="dtitulo">
-                                            Chats grupales por usuario
-                                        </div>
-                                        <div className="dsubtitulo">
-                                            <select class="form-control" onChange={handleInputChange} name="estado" id="exampleFormControlSelect2">
-                                                <option defaultValue>Seleccione un estado...</option>
-                                                <option value="Activo">Activo</option>
-                                                <option value="Inactivo">Inactivo</option>
-                                            </select>
-                                        </div>
-                                        <div className="dinfo">
-                                            <Pie
-                                                data={{
-                                                    labels: rcantidadgruposusuarios.map(({ _id, conexiones }, i) =>
-                                                        [
-                                                            _id
-                                                        ]
-                                                    ),
-                                                    datasets: [{
-                                                        label: 'Conexiones',
-                                                        data: rcantidadgruposusuarios.map(({ _id, conexiones }, i) =>
-                                                            [
-                                                                conexiones
-                                                            ]
-                                                        ),
-                                                        backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                        ],
-                                                        borderColor: [
-                                                            'rgba(255, 99, 132, 1)',
-                                                            'rgba(54, 162, 235, 1)',
-                                                            'rgba(255, 206, 86, 1)',
-                                                            'rgba(75, 192, 192, 1)',
-                                                            'rgba(153, 102, 255, 1)',
-                                                            'rgba(255, 159, 64, 1)',
-                                                        ],
-                                                    }]
-                                                }}
-                                                options={{
-                                                    layout: {
-                                                        padding: 8,
-                                                    },
-                                                    responsive: true,
-                                                    maintainAspectRatio: false,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="dapartado">
-                                        <div className="dtitulo">
-                                            Canales por usuario
-                                        </div>
-                                        <div className="dsubtitulo">
-                                            <select class="form-control" onChange={handleInputChange} name="estado" id="exampleFormControlSelect2">
-                                                <option defaultValue>Seleccione un estado...</option>
-                                                <option value="Activo">Activo</option>
-                                                <option value="Inactivo">Inactivo</option>
-                                            </select>
-                                        </div>
-                                        <div className="dinfo">
-                                            <Pie
-                                                data={{
-                                                    labels: rcantidadchatusuarios.map(({ _id, conexiones }, i) =>
-                                                        [
-                                                            _id
-                                                        ]
-                                                    ),
-                                                    datasets: [{
-                                                        label: 'Conexiones',
-                                                        data: rcantidadchatusuarios.map(({ _id, conexiones }, i) =>
-                                                            [
-                                                                conexiones
-                                                            ]
-                                                        ),
-                                                        backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                        ],
-                                                        borderColor: [
-                                                            'rgba(255, 99, 132, 1)',
-                                                            'rgba(54, 162, 235, 1)',
-                                                            'rgba(255, 206, 86, 1)',
-                                                            'rgba(75, 192, 192, 1)',
-                                                            'rgba(153, 102, 255, 1)',
-                                                            'rgba(255, 159, 64, 1)',
-                                                        ],
-                                                    }]
-                                                }}
-                                                options={{
-                                                    layout: {
-                                                        padding: 8,
-                                                    },
-                                                    responsive: true,
-                                                    maintainAspectRatio: false,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="dapartado">
-                                        <div className="dtitulo">
-                                            Chats por usuario
-                                        </div>
-                                        <div className="dsubtitulo">
-                                            <select class="form-control" onChange={handleInputChange} name="estado" id="exampleFormControlSelect2">
-                                                <option defaultValue>Seleccione un estado...</option>
-                                                <option value="Activo">Activo</option>
-                                                <option value="Inactivo">Inactivo</option>
-                                            </select>
-                                        </div>
-                                        <div className="dinfo">
-                                            <Pie
-                                                data={{
-                                                    labels: rcantidadusuarioschat.map(({ _id, conexiones }, i) =>
-                                                        [
-                                                            _id.name
-                                                        ]
-                                                    ),
-                                                    datasets: [{
-                                                        label: 'Conexiones',
-                                                        data: rcantidadusuarioschat.map(({ _id, conexiones }, i) =>
-                                                            [
-                                                                conexiones
-                                                            ]
-                                                        ),
-                                                        backgroundColor: [
-                                                            'rgba(255, 99, 132, 0.2)',
-                                                            'rgba(54, 162, 235, 0.2)',
-                                                            'rgba(255, 206, 86, 0.2)',
-                                                            'rgba(75, 192, 192, 0.2)',
-                                                            'rgba(153, 102, 255, 0.2)',
-                                                            'rgba(255, 159, 64, 0.2)',
-                                                        ],
-                                                        borderColor: [
-                                                            'rgba(255, 99, 132, 1)',
-                                                            'rgba(54, 162, 235, 1)',
-                                                            'rgba(255, 206, 86, 1)',
-                                                            'rgba(75, 192, 192, 1)',
-                                                            'rgba(153, 102, 255, 1)',
-                                                            'rgba(255, 159, 64, 1)',
-                                                        ],
-                                                    }]
-                                                }}
-                                                options={{
-                                                    layout: {
-                                                        padding: 8,
-                                                    },
-                                                    responsive: true,
-                                                    maintainAspectRatio: false,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            : (opcionDashboard == "Chat" && fullscreen == "Fullscreen") ?
-                                <div className="dfcontenido">
-                                    <div className="dapartado">
-                                        <div className="dtitulo dtabla">
-                                            <div className="opttabla">
-                                                <ReactHTMLTableToExcel
-                                                    id="test-table-xls-button"
-                                                    className="download-table-xls-button"
-                                                    table="descargar-tabla-usuarios"
-                                                    filename="TablaUsuarios"
-                                                    sheet="Usuarios"
-                                                    buttonText="" />
-                                            </div>
-                                            <div className="opttabla">
-                                                Tabla de usuarios
-                                            </div>
-                                            <div className="opttabla">
-                                                {(fullscreen == "Fullscreen") ?
-                                                    <i class="fas fa-compress" onClick={() => { Fullscreen("NoFullscreen"); }}></i>
-                                                    :
-                                                    <i class="fas fa-expand 4x" onClick={() => { Fullscreen("Fullscreen"); }}></i>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div className="dsubtitulo">
-                                        </div>
-                                        <div className="dinfo">
-                                            <table id="descargar-tabla-usuarios">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Account</th>
-                                                        <th scope="col">Due Date</th>
-                                                        <th scope="col">Amount</th>
-                                                        <th scope="col">Period</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {chats.map(({ titulo, id, descripcion, start, end, tipo }, i) =>
-                                                        <tr>
-                                                            <td data-label="Account">Visa - 3412</td>
-                                                            <td data-label="Due Date">04/01/2016</td>
-                                                            <td data-label="Amount">$1,190</td>
-                                                            <td data-label="Period">03/01/2016 - 03/31/2016</td>
-                                                        </tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                : ""
-                        } */}
                     </div>
                 </div>
             </div>

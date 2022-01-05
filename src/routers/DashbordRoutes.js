@@ -17,7 +17,6 @@ import { Navbar } from "../components/ui/Navbar";
 // import { EventosScreen } from "../components/eventos/EventosScreen";
 import { CalendarScreen } from "../components/calendario/CalendarScreen";
 import { ChatScreen } from "../components/chat/ChatScreen";
-import { MantenedorUsuario2 } from "../components/mantenedorUsuario/MantenedorUsuario2";
 import { EventosScreen2 } from "../components/eventos/EventosScreen2";
 import { DashboardScreen } from "../components/dashboard/DashboardScreen";
 import { ChatVideoCall } from "../components/chat/ChatVideoCall";
@@ -34,7 +33,7 @@ export const DashbordRoutes = () => {
           <Route exact path="/" component={HomeScreen} />
           <Route exact path="/perfil" component={PerfilScreen} />
           <Route exact path="/usuarios" component={ListarUsuario} />
-          <Route exact path="/MantenedorUsuario2" component={MantenedorUsuario2} />
+          <Route exact path="/ListarUsuario" component={ListarUsuario} />
           <Route exact path="/eventos" component={EventosScreen2} />
           <Route exact path="/calendario" component={CalendarScreen} />
           <Route exact path="/configuracion" component={Configuracion} />

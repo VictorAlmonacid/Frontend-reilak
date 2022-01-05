@@ -92,7 +92,7 @@ SUBIDA DE ARCHIVOS
           from: uid,
           to: chatActivo.id,
           message: img,
-          viewedby: [{ id: uid, fecha: new Date()}],
+          viewedby: [{ _id: uid, fecha: new Date()}],
         });
         imgInput.current.value = "";
         // console.log(imgInput.current)

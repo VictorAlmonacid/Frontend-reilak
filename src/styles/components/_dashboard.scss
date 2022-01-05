@@ -6,11 +6,11 @@
 
 .dashboard {
     display: grid;
-    grid-template-rows: 5% 95%;
-    align-self: center;
+    grid-template-rows: 50px auto;
     justify-self: center;
     background-color: $blanco-2;
-    height: 95%;
+    margin-top: 20px;
+    margin-bottom: 20px;
     width: 95%;
     border-radius: 5px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -89,6 +89,14 @@
                 height: 100%;
                 width: 100%;
                 grid-template-columns: 10% 80% 10%;
+                align-items: center;
+                justify-items: center;
+            }
+            .dsubtitulo {
+                display: grid;
+                height: 100%;
+                width: 100%;
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
                 align-items: center;
                 justify-items: center;
             }
@@ -196,4 +204,79 @@
             }
         }
     }
+}
+
+.duapartado {
+    display: grid;
+    align-self: center;
+    justify-self: center;
+    margin: 20px;
+    width: 98%;
+    border-radius: 5px;
+    background-color: $blanco-0;
+    .titulo {
+        height: 30px;
+        width: 100%;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        background-color: $blanco-2;
+    }
+    .datos {
+        height: 98%;
+        width: 98%;
+        display: grid;
+        align-self: center;
+        justify-self: center;
+        grid-auto-rows: 380px;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 380px));
+    }
+    .cubo {
+        border-radius: 5px;
+        background-color: $blanco-1;
+        height: 90%;
+        width: 90%;
+        align-self: center;
+        justify-self: center;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        display: grid;
+        grid-template-rows: 10% 90%;
+        .cubotitulo {
+            display: grid;
+            grid-template-columns: 20% 60% 20%;
+            align-items: center;
+            justify-items: center;
+        }
+    }
+    .valoresgenerales {
+        display: grid;
+        height: 100%;
+        width: 100%;
+        grid-template-columns: 1fr 1fr;
+        color: $morado;
+        font-weight: bold;
+        font-size: 400%;
+        .valoresgeneralesduo {
+            height: 100%;
+            width: 100%;
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            align-items: center;
+            justify-items: center;
+        }
+    }
+}
+
+.valoresgeneralessolo {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    color: $morado;
+    font-weight: bold;
+}
+
+.tamanoletra {
+    font-size: 80px;
 }

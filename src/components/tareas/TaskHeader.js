@@ -17,14 +17,14 @@ useEffect(() => {
     e.estado === true
   ));
   setEnProceso(tareas.filter(e=>
-    e.estado === false
+    e.estado === false && moment(e.fechaTermino).isAfter(Date.now())
   ));
   setAtrasada(tareas.filter(e=>
-    e.estado === false && moment(e.fechaTermino).format("DD-MM-YYYY")<moment(Date.now()).format("DD-MM-YYYY")
+    e.estado === false && moment(e.fechaTermino).isBefore(Date.now())
     
   ));
-}, [tareas])
 
+}, [tareas])
   return (
     <div className="task__header">
       <div className="task__header-left">

@@ -84,22 +84,50 @@ MODAL FELICITAR
 ***************************/
 
 .birthday__modal {
-    background-color: $fondo-panel;
-    color: $texto-principal;
-    min-width: 450px;
-}
 
+    background-color: $blanco-0;
+    color: $negro-0;
+    width: 500px;
+
+    height: 350px;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+        width: 9px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: $iconos;
+        border-radius: 5px;
+    }
+}
+.chat__SendMessage-left-icon{
+    padding-top: 3px;
+}
+.birthday__modal-body-emoji{
+    position: relative;
+}
+.sendMessage__emoji-select-birthday{
+    // top: 10px;
+    position: absolute;
+    // bottom: -320px;
+    z-index: 99;
+}
 .birthday__modal-header {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: bold;
+  
 }
 
+.birthday__modal-body{
+    display: flex;
+    padding-top: 60px;
+}
 .birthday__modal-body input {
+   
     outline: none;
     border: none;
     width: 100%;
-    background-color: $fondo-contenido;
-    color: $texto-secundario;
+    background-color: $blanco-1;
+    color: $negro-1;
     margin: 7px 0 7px 0;
 }
 

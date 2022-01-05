@@ -83,3 +83,31 @@ const messageBirthdayLoaded = (birth) => ({
   type: types.messageBirthdayLoaded,
   payload: birth,
 });
+
+
+/************************************
+ MARCAR MENSAJE CUMPLEAÑOS COMO LEIDO
+**************************************/
+export const birthdayStartAddChangeViewed = (birthday) => {
+  return async (dispatch) =>{
+    try {
+      const resp = await fetchConAxios(`birthday/${birthday}`,birthday, "PUT");
+      const body = await JSON.stringify(resp.data.messageBirthday);
+      console.log(body)
+      if(body){
+        console.log('ok')
+        // Swal.fire('Publicacion editada', '', 'success');
+        // dispatch(eventUpdate(event));
+        dispatch(messageBirthdayStartLoading());
+      }
+
+    }catch(error){
+      Swal.fire('Hubo un error contacte con el administrador', '', 'error');
+      console.log(error)
+    }
+  }
+};
+const birthdayChangeViewed = (birthday) => ({
+  type: types.birthdayAddNew,
+  payload: birthday,
+});
